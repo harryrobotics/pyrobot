@@ -51,9 +51,9 @@ _BASEC.Z_MIN_TRESHOLD_OCC_MAP = 0.1
 # z maximum cut-off height for slam-based costmap computation
 _BASEC.Z_MAX_TRESHOLD_OCC_MAP = 0.8
 # proportional control specific max linear velocity
-_BASEC.MAX_ABS_FWD_SPEED_P_CONTROLLER = 0.5
+_BASEC.MAX_ABS_FWD_SPEED_P_CONTROLLER = 5.0
 # proportional control specific max angular velocity
-_BASEC.MAX_ABS_TURN_SPEED_P_CONTROLLER = 1
+_BASEC.MAX_ABS_TURN_SPEED_P_CONTROLLER = 2.0
 
 _BASEC.VSLAM = CN()
 # topic name of the camera pose
@@ -78,7 +78,7 @@ _BASEC.VSLAM.SUBSAMPLE_PIXS = 1
 # publishing frequence of the occupancy map
 _BASEC.VSLAM.OCCUPANCY_MAP_RATE = 0.5
 
-# 
+#
 def get_cfg(base_type='kobuki'):
     global _C
     if base_type not in ['kobuki', 'create']:

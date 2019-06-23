@@ -164,6 +164,35 @@ class HuskyBase(Base):
         self.build_map = rospy.get_param('use_vslam', False)
         self.base_state = BaseState(base, self.build_map, map_img_dir, configs)
 
+        # Path planner
+        if base_planner is None:
+            base_planner = configs.BASE.BASE_PLANNER
+        assert (base_planner in ['movebase', 'none']), \
+            'BASE.[BASE_PLANNER] should be movebase or none.'
+        if base_planner == 'movebase':
+            self.planner = MoveBasePlanner(self.configs)
+        elif base_planner == 'none':
+            # No path planning is done here.
+            self.planner = None
+        self.base_planner = base_planner
+
+        # Set up low-level controllers.
+        if base_controller is None:
+            base_controller = configs.BASE.BASE_CONTROLLER
+        assert (base_controller in ['proportional', 'ilqr', 'movebase']), \
+            'BASE.BASE_CONTROLLER should be one of proportional, ilqr, ' \
+            'movebase but is {:s}'.format(base_controller)
+
+        self.base_controller = base_controller
+        if base_controller == 'ilqr':
+            self.controller = ILQRControl(
+                self.base_state, self.ctrl_pub, self.configs)
+        elif base_controller == 'proportional':
+            self.controller = ProportionalControl(
+                self.base_state, self.ctrl_pub, self.configs)
+        elif base_controller == 'movebase':
+            self.controller = MoveBaseControl(self.base_state, self.configs)
+
         rospy.on_shutdown(self.clean_shutdown)
 
 
@@ -274,6 +303,10 @@ class HuskyBase(Base):
                 return
 
         self.controller.go_to_absolute(xyt_position, close_loop, smooth)
+
+
+
+
 
     def track_trajectory(self, states, controls=None, close_loop=True):
         """
